@@ -51,7 +51,7 @@ class OTBoxStartup:
 				error.append(line)
 
 			if len(error) > 0:
-				raise Exception(self.CMD_ERROR) 
+				raise Exception(self.CMD_ERROR)
 
 			return ''.join(output)
 
@@ -69,7 +69,7 @@ class OTBoxStartup:
 			num_of_retries = self.SSH_RETRY_TIME / self.RETRY_PAUSE
 
 			while True:
-				try: 
+				try:
 					boot_op = self.ssh_command_exec('ssh -o "StrictHostKeyChecking no" root@' + node_name + ' "cd ~/A8;"')
 				except:
 					print 'Error executing command: ssh -o "StrictHostKeyChecking no" root@' + node_name
@@ -92,7 +92,7 @@ class OTBoxStartup:
 		print("OTBox startup commencing...")
 		self.boot_wait()
 
-		try: 
+		try:
 			for ind, node in enumerate(self.booted_nodes):
 				node_name = 'node-' + node.split('.')[0]
 				print("Starting otbox.py on " + node_name + "...")
@@ -102,4 +102,4 @@ class OTBoxStartup:
 		except:
 			self.socketIoHandler.publish('NODE_ACTIVE_FAIL', node_name)
 			print("Exception happened!")
-		
+

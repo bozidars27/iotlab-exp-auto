@@ -11,7 +11,6 @@ HOSTNAME = 'saclay.iot-lab.info'
 EXP_DURATION = 15 #Duration in minutes
 NUM_OF_NODES = 5 #Number of nodes in the experiment
 
-
 def main():
 	print 'Script started'
 	if sys.argv[1] == '-reserve':
@@ -28,7 +27,6 @@ def main():
 		print 'Starting OV log monitoring'
 		OVLogMonitor().start()
 
-
 if __name__ == '__main__':
 	main()
-		
+
