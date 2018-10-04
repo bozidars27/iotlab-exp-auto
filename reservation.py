@@ -1,0 +1,83 @@
+from socket_io_handler import SocketIoHandler
+import paramiko
+import json
+import time
+
+class Reservation:
+
+	CMD_ERROR = "cmd_error"
+	SSH_RETRY_TIME = 120
+	RETRY_PAUSE = 10
+	
+	def __init__(self, user, domain):
+		self.user = user
+		self.domain = domain
+
+		self.socketIoHandler = SocketIoHandler()
+
+		self.client = paramiko.SSHClient()
+		self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+		self.client.load_system_host_keys()
+
+		self.ssh_connect()
+
+	def ssh_connect(self):
+		self.client.connect(self.domain, username=self.user)
+
+	def ssh_disconnect(self):
+		self.client.close()
+
+	def ssh_command_exec(self, command):
+		try:
+			stdin, stdout, stderr = self.client.exec_command(command)
+			stdin.close()
+
+			output = []
+			for line in stdout.read().splitlines():
+				output.append(line)
+
+			error = []
+			for line in stderr.read().splitlines():
+				error.append(line)
+
+			if len(error) > 0:
+				print("Error: " + ''.join(error))
+				raise Exception(self.CMD_ERROR) 
+
+			return ''.join(output)
+
+		except:
+			return self.CMD_ERROR
+
+
+	def reserve_experiment(self, duration, node_num):
+		#output = self.ssh_command_exec('iotlab-experiment submit -n a8_exp -d ' + str(duration) + ' -l ' + str(node_num) + ',archi=a8:at86rf231+site=saclay')
+		output = self.ssh_command_exec('iotlab-experiment submit -n a8_exp -d ' + str(duration) + ' -l saclay,a8,100+102+103+104')
+		if output != self.CMD_ERROR:
+			self.experiment_id = json.loads(output)['id']
+			self.socketIoHandler.publish('NODE_RESERVATION', 'All nodes reserved')
+
+
+	
+	def get_reserved_nodes(self, logging):
+		retries = 0
+		num_of_retries = self.SSH_RETRY_TIME / self.RETRY_PAUSE
+
+		json_output = []
+
+		while True:
+			output = self.ssh_command_exec('iotlab-experiment get -p')
+
+			try:
+				json_output = json.loads(output)['nodes']
+				break
+
+			except:
+				if retries <= num_of_retries:
+					retries += 1
+					time.sleep(self.RETRY_PAUSE)
+				else:
+					break
+		
+		#Logging point: if logging log json_output
+		return json_output
