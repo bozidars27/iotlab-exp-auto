@@ -50,10 +50,8 @@ class Reservation:
 			return self.CMD_ERROR
 
 
-	def reserve_experiment(self, duration, node_num):
-		#output = self.ssh_command_exec('iotlab-experiment submit -n a8_exp -d ' + str(duration) + ' -l ' + str(node_num) + ',archi=a8:at86rf231+site=saclay')
-		#output = self.ssh_command_exec('iotlab-experiment submit -n a8_exp -d ' + str(duration) + ' -l saclay,a8,100+102+103+104')
-		output = self.ssh_command_exec('iotlab-experiment submit -n a8_exp -d ' + str(duration) + ' -l saclay,a8,106-108')
+	def reserve_experiment(self, duration, nodes):
+		output = self.ssh_command_exec('iotlab-experiment submit -n a8_exp -d ' + str(duration) + ' -l ' + nodes)
 		if output != self.CMD_ERROR:
 			self.experiment_id = json.loads(output)['id']
 			self.socketIoHandler.publish('NODE_RESERVATION', 'All nodes reserved')
