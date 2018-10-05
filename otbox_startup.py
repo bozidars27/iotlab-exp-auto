@@ -96,7 +96,7 @@ class OTBoxStartup:
 			for ind, node in enumerate(self.booted_nodes):
 				node_name = 'node-' + node.split('.')[0]
 				print("Starting otbox.py on " + node_name + "...")
-				self.ssh_command_exec('ssh -o "StrictHostKeyChecking no" root@' + node_name + ' "source /etc/profile; cd ~/A8; pip install requests; python otbox.py > otbox.log &"')
+				self.ssh_command_exec('ssh -o "StrictHostKeyChecking no" root@' + node_name + ' "source /etc/profile; cd ~/A8; rm -rf opentestbed; git clone https://github.com/malishav/opentestbed.git; cd opentestbed; git checkout origin/iotlab; pip install requests; python otbox.py > otbox.log &"')
 				self.active_nodes.append(node)
 				self.socketIoHandler.publish('NODE_ACTIVE', node_name)
 		except:
