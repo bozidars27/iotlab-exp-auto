@@ -10,7 +10,7 @@ class OTBoxStartup:
 
 	CMD_ERROR = "cmd_error"
 	SSH_RETRY_TIME = 600
-	RETRY_PAUSE = 10
+	RETRY_PAUSE = 6
 
 	def __init__(self, user, domain):
 		self.user = user
@@ -76,10 +76,11 @@ class OTBoxStartup:
 
 				if boot_op == self.CMD_ERROR and retries <= num_of_retries:
 					print("Node " + node_name + ": retrying")
+					self.socketIoHandler.publish('BOOT_RETRY', node_name + ": " + str(retries) + "/" + str(num_of_retries))
 					retries += 1
 					time.sleep(self.RETRY_PAUSE)
 				elif retries > num_of_retries:
-					self.socketIoHandler.publish('NODE_BOOTED_FAIL', node_name)
+					self.socketIoHandler.publish('BOOT_FAIL', node_name)
 					break
 				else:
 					self.socketIoHandler.publish('NODE_BOOTED', node_name)
