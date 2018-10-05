@@ -30,6 +30,8 @@ class OTBoxStartup:
 		self.reservation = Reservation(user, domain)
 		self.nodes = self.reservation.get_reserved_nodes(True)
 
+                # Fetch the latest version of opentestbed software in the shared A8 director of the SSH frontend
+		self.ssh_command_exec('cd A8; rm -rf opentestbed; git clone https://github.com/malishav/opentestbed.git; cd opentestbed; git checkout origin/iotlab;')
 
 	def ssh_connect(self):
 		self.client.connect(self.domain, username=self.user)
@@ -63,14 +65,14 @@ class OTBoxStartup:
 		for ind, node in enumerate(self.nodes):
 
 			node_name = 'node-' + node.split('.')[0]
-			print("Testing node: " + node_name)
+			print("Probing node: " + node_name)
 
 			retries = 0
 			num_of_retries = self.SSH_RETRY_TIME / self.RETRY_PAUSE
 
 			while True:
 				try:
-					boot_op = self.ssh_command_exec('ssh -o "StrictHostKeyChecking no" root@' + node_name + ' "cd ~/A8;"')
+					boot_op = self.ssh_command_exec('ssh -o "StrictHostKeyChecking no" root@' + node_name + ' "cd A8;"')
 				except:
 					print 'Error executing command: ssh -o "StrictHostKeyChecking no" root@' + node_name
 
@@ -96,7 +98,8 @@ class OTBoxStartup:
 			for ind, node in enumerate(self.booted_nodes):
 				node_name = 'node-' + node.split('.')[0]
 				print("Starting otbox.py on " + node_name + "...")
-				self.ssh_command_exec('ssh -o "StrictHostKeyChecking no" root@' + node_name + ' "source /etc/profile; cd ~/A8; rm -rf opentestbed; git clone https://github.com/malishav/opentestbed.git; cd opentestbed; git checkout origin/iotlab; pip install requests; python otbox.py > otbox.log &"')
+                                self.ssh_command_exec('ssh -o "StrictHostKeyChecking no" root@' + node_name + ' "source /etc/profile; cd A8; cd opentestbed; pip install requests; python otbox.py >& otbox-' + node_name + '.log &"')
+
 				self.active_nodes.append(node)
 				self.socketIoHandler.publish('NODE_ACTIVE', node_name)
 		except:
