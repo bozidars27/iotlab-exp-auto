@@ -9,15 +9,14 @@ USERNAME = 'skrbic'
 HOSTNAME = 'saclay.iot-lab.info'
 
 EXP_DURATION = 15 #Duration in minutes
-NUM_OF_NODES = 5 #Number of nodes in the experiment
-
+NODES = "saclay,a8,102+103"
 
 def main():
 	print 'Script started'
 	if sys.argv[1] == '-reserve':
 		print 'Reserving nodes'
 		res = Reservation(USERNAME, HOSTNAME)
-		res.reserve_experiment(EXP_DURATION, NUM_OF_NODES)
+		res.reserve_experiment(EXP_DURATION, NODES)
 	elif sys.argv[1] == '-otbox':
 		print 'Starting OTBox'
 		OTBoxStartup(USERNAME, HOSTNAME).start()
@@ -28,7 +27,6 @@ def main():
 		print 'Starting OV log monitoring'
 		OVLogMonitor().start()
 
-
 if __name__ == '__main__':
 	main()
-		
+
