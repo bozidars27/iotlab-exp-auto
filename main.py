@@ -9,7 +9,7 @@ USERNAME = 'skrbic'
 HOSTNAME = 'saclay.iot-lab.info'
 
 EXP_DURATION = 15 #Duration in minutes
-NODES = "saclay,a8,102+103"
+NODES = "saclay,a8,106+107+108"
 
 def main():
 	print 'Script started'

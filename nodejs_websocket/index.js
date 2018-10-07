@@ -56,4 +56,9 @@ io.on('connection', function(socket) {
         console.log('Topic: LOG_MODIFICATION - ' + message);
         io.to('channel' + channelId).emit('LOG_MODIFICATION', message)
     });
+
+    socket.on('EXP_TERMINATE', message => {
+        console.log('Topic: EXP_TERMINATE - ' + message);
+        io.to('channel' + channelId).emit('EXP_TERMINATE', message)
+    });
 });
