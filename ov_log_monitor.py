@@ -27,7 +27,7 @@ class MyHandler(FileSystemEventHandler):
 
 			if last_line_timestamp > self.last_timestamp:
 				#print("event type: " + str(event.event_type) + " path : " + str(event.src_path))
-				socketIoHandler.publish('LOG_MODIFICATION', last_line)		
+				socketIoHandler.publish('LOG_MODIFICATION', last_line)
 				self.last_timestamp = last_line_timestamp
 				self.unix_timestamp = time.time()
 
@@ -40,7 +40,7 @@ class MyHandler(FileSystemEventHandler):
 	    if time.time() - self.unix_timestamp > self.SHUT_DOWN_TIME:
 	    	socketIoHandler.publish('EXP_TERMINATE', '')
 	    	ExpTerminate().exp_terminate()
-		
+
 	def get_last_line(self, file_path):
 		if os.path.isfile(file_path):
 			return subprocess.check_output(['tail', '-1', file_path])
