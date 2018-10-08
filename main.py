@@ -13,10 +13,15 @@ NODES = "saclay,a8,106+107+108"
 
 def main():
 	print 'Script started'
+	if sys.argv[1] == '-check':
+		print 'Checking experiment'
+		Reservation(USERNAME, HOSTNAME).check_experiment()
 	if sys.argv[1] == '-reserve':
 		print 'Reserving nodes'
-		res = Reservation(USERNAME, HOSTNAME)
-		res.reserve_experiment(EXP_DURATION, NODES)
+		Reservation(USERNAME, HOSTNAME).reserve_experiment(EXP_DURATION, NODES)
+	if sys.argv[1] == '-terminate':
+		print 'Terminating experiment'
+		Reservation(USERNAME, HOSTNAME).terminate_experiment()
 	elif sys.argv[1] == '-otbox':
 		print 'Starting OTBox'
 		OTBoxStartup(USERNAME, HOSTNAME).start()

@@ -1,4 +1,6 @@
 from socket_io_handler import SocketIoHandler
+from exp_terminate import ExpTerminate
+
 import paramiko
 import json
 import time
@@ -51,10 +53,14 @@ class Reservation:
 
 
 	def reserve_experiment(self, duration, nodes):
-		output = self.ssh_command_exec('iotlab-experiment submit -n a8_exp -d ' + str(duration) + ' -l ' + nodes)
-		if output != self.CMD_ERROR:
-			self.experiment_id = json.loads(output)['id']
-			self.socketIoHandler.publish('NODE_RESERVATION', 'All nodes reserved')
+		if self.check_experiment():
+			self.socketIoHandler.publish('NODE_RESERVATION', 'Experiment exists')
+		else:
+			output = self.ssh_command_exec('iotlab-experiment submit -n a8_exp -d ' + str(duration) + ' -l ' + nodes)
+			if output != self.CMD_ERROR:
+				self.experiment_id = json.loads(output)['id']
+				self.socketIoHandler.publish('NODE_RESERVATION', 'All nodes reserved')
+
 
 	def get_reserved_nodes(self, logging):
 		retries = 0
@@ -79,3 +85,13 @@ class Reservation:
 
 		self.socketIoHandler.publish('RESERVATION_SUCCESS', output)
 		return json_output
+
+	def check_experiment(self):
+		output = self.ssh_command_exec('iotlab-experiment get p')
+		print("Experiment check: " + output)
+		return output != self.CMD_ERROR
+
+	def terminate_experiment(self):
+		self.ssh_command_exec('iotlab-experiment stop')
+		self.socketIoHandler.publish('EXP_TERMINATE', '')
+		ExpTerminate().exp_terminate()
