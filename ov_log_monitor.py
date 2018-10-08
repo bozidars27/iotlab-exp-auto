@@ -11,6 +11,7 @@ from watchdog.events import FileSystemEventHandler
 
 socketIoHandler = SocketIoHandler()
 
+logDir = os.path.join(os.path.dirname(__file__), "..", "openvisualizer", "build", "runui")
 
 class MyHandler(FileSystemEventHandler):
 
@@ -27,7 +28,7 @@ class MyHandler(FileSystemEventHandler):
 
 			if last_line_timestamp > self.last_timestamp:
 				#print("event type: " + str(event.event_type) + " path : " + str(event.src_path))
-				socketIoHandler.publish('LOG_MODIFICATION', last_line)		
+				socketIoHandler.publish('LOG_MODIFICATION', last_line)
 				self.last_timestamp = last_line_timestamp
 				self.unix_timestamp = time.time()
 
@@ -40,7 +41,7 @@ class MyHandler(FileSystemEventHandler):
 	    if time.time() - self.unix_timestamp > self.SHUT_DOWN_TIME:
 	    	socketIoHandler.publish('EXP_TERMINATE', '')
 	    	ExpTerminate().exp_terminate()
-		
+
 	def get_last_line(self, file_path):
 		if os.path.isfile(file_path):
 			return subprocess.check_output(['tail', '-1', file_path])
@@ -50,14 +51,12 @@ class MyHandler(FileSystemEventHandler):
 
 class OVLogMonitor:
 
-	LOG_DIR = '/home/vagrant/soda/openvisualizer/openvisualizer/build/runui'
-
 	def __init__(self):
 		self.event_handler = MyHandler()
 		self.observer = Observer()
 
 	def start(self):
-		self.observer.schedule(self.event_handler, path=self.LOG_DIR, recursive=False)
+		self.observer.schedule(self.event_handler, path=logDir, recursive=False)
 		self.observer.start()
 
 		try:
