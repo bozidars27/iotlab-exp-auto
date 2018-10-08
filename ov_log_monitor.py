@@ -11,6 +11,7 @@ from watchdog.events import FileSystemEventHandler
 
 socketIoHandler = SocketIoHandler()
 
+logDir = os.path.join(os.path.dirname(__file__), "..", "openvisualizer", "build", "runui")
 
 class MyHandler(FileSystemEventHandler):
 
@@ -50,14 +51,12 @@ class MyHandler(FileSystemEventHandler):
 
 class OVLogMonitor:
 
-	LOG_DIR = '/home/vagrant/soda/openvisualizer/openvisualizer/build/runui'
-
 	def __init__(self):
 		self.event_handler = MyHandler()
 		self.observer = Observer()
 
 	def start(self):
-		self.observer.schedule(self.event_handler, path=self.LOG_DIR, recursive=False)
+		self.observer.schedule(self.event_handler, path=logDir, recursive=False)
 		self.observer.start()
 
 		try:
