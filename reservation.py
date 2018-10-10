@@ -87,7 +87,7 @@ class Reservation:
 		return json_output
 
 	def check_experiment(self):
-		output = self.ssh_command_exec('iotlab-experiment get p')
+		output = self.ssh_command_exec('iotlab-experiment get -p')
 		print("Experiment check: " + output)
 		return output != self.CMD_ERROR
 
