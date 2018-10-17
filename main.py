@@ -1,11 +1,16 @@
 import sys
+import ConfigParser
 
 from otbox_startup import OTBoxStartup
 from ov_startup import OVStartup
 from reservation import Reservation
 from ov_log_monitor import OVLogMonitor
 
-USERNAME = 'skrbic'
+configParser = ConfigParser.RawConfigParser()   
+configFilePath = 'conf.txt'
+configParser.read(configFilePath)
+
+USERNAME = configParser.get('exp-config', 'user')
 HOSTNAME = 'saclay.iot-lab.info'
 
 EXP_DURATION = 15 #Duration in minutes
