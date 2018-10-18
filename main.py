@@ -1,5 +1,6 @@
 import sys
 import ConfigParser
+import os
 
 from otbox_startup import OTBoxStartup
 from ov_startup import OVStartup
@@ -7,7 +8,7 @@ from reservation import Reservation
 from ov_log_monitor import OVLogMonitor
 
 configParser = ConfigParser.RawConfigParser()   
-configFilePath = 'conf.txt'
+configFilePath = os.path.join(os.path.dirname(__file__), 'conf.txt')
 configParser.read(configFilePath)
 
 USERNAME = configParser.get('exp-config', 'user')
