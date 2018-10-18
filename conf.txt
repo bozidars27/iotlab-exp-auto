@@ -1,2 +1,2 @@
 [exp-config]
-user = "skrbic"
+user = skrbic
