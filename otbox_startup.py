@@ -31,7 +31,7 @@ class OTBoxStartup:
 		self.nodes = self.reservation.get_reserved_nodes(True)
 
                 # Fetch the latest version of opentestbed software in the shared A8 director of the SSH frontend
-		self.ssh_command_exec('cd A8; rm -rf opentestbed; git clone https://github.com/bozidars27/opentestbed.git; cd opentestbed; git checkout origin/modifications;')
+		self.ssh_command_exec('cd A8; rm -rf opentestbed; git clone https://github.com/bozidars27/opentestbed.git; cd opentestbed; git checkout origin/opentestbed-extension;')
 
 	def ssh_connect(self):
 		self.client.connect(self.domain, username=self.user)
