@@ -15,7 +15,7 @@ USERNAME = configParser.get('exp-config', 'user')
 HOSTNAME = 'saclay.iot-lab.info'
 
 EXP_DURATION = 15 #Duration in minutes
-NODES = "saclay,a8,106+107+108"
+NODES = "saclay,a8,106+107+102"
 
 def main():
 	print 'Script started'
