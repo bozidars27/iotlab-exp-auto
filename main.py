@@ -3,9 +3,11 @@ import ConfigParser
 import os
 
 from otbox_startup import OTBoxStartup
+from otbox_flash import OTBoxFlash
 from ov_startup import OVStartup
 from reservation import Reservation
 from ov_log_monitor import OVLogMonitor
+
 
 configParser = ConfigParser.RawConfigParser()   
 configFilePath = os.path.join(os.path.dirname(__file__), 'conf.txt')
@@ -16,6 +18,8 @@ HOSTNAME = 'saclay.iot-lab.info'
 
 EXP_DURATION = 15 #Duration in minutes
 NODES = "saclay,a8,106+107+102"
+
+FIRMWARE_PATH = configParser.get('exp-config', 'firware_path')
 
 def main():
 	print 'Script started'
@@ -31,6 +35,9 @@ def main():
 	elif sys.argv[1] == '-otbox':
 		print 'Starting OTBox'
 		OTBoxStartup(USERNAME, HOSTNAME).start()
+	elif sys.argv[1] == '-otbox-flash':
+		print 'Flashing OTBox'
+		OTBoxFlash(FIRMWARE_PATH).flash()
 	elif sys.argv[1] == '-ov-start':
 		print 'Starting OV'
 		OVStartup().start()
