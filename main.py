@@ -48,7 +48,7 @@ def get_args():
 
 	return {
 		'action'  : args.action,
-		'testbed' : args.testbed
+		'testbed' : args.testbed,
 		'firmware': args.firmware
 	}
 
@@ -73,7 +73,7 @@ def main():
 	elif action == 'otbox':
 		print 'Starting OTBox'
 		OTBoxStartup(USERNAME, HOSTNAME).start()
-	elif action == 'otboxflash':
+	elif action == 'otbox-flash':
 		print 'Flashing OTBox'
 		OTBoxFlash(firmware, BROKER, testbed).flash()
 	elif action == 'ov-start':

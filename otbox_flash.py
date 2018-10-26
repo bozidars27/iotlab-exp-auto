@@ -1,11 +1,12 @@
 import paho.mqtt.client as mqtt
 import base64
+import json
 
 CLIENT = 'exp-auto'
 
 class OTBoxFlash:
 
-	__init__(self, firmware_path, broker, testbed):
+	def __init__(self, firmware_path, broker, testbed):
 		self.firmware_path = firmware_path
 		self.broker        = broker
 		self.testbed       = testbed
@@ -18,7 +19,7 @@ class OTBoxFlash:
 
 		topic = '{0}/deviceType/mote/deviceId/+/cmd/program'.format(self.testbed)
 
-		with fopen(self.firmware_path) as f:
+		with open(self.firmware_path) as f:
 			data = f.read().replace('\n', '')
 			payload = {
 				'hex': base64.b64encode(data)
