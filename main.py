@@ -72,7 +72,7 @@ def main():
 		Reservation(USERNAME, HOSTNAME).terminate_experiment()
 	elif action == 'otbox':
 		print 'Starting OTBox'
-		OTBoxStartup(USERNAME, HOSTNAME, testbed).start()
+		OTBoxStartup(USERNAME, HOSTNAME, BROKER, testbed).start()
 	elif action == 'otbox-flash':
 		print 'Flashing OTBox'
 		OTBoxFlash(firmware, BROKER, testbed).flash()

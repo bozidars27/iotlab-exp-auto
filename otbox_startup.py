@@ -3,6 +3,7 @@ import json
 import subprocess
 import time
 import threading
+import paho.mqtt.client as mqtt
 
 from socket_io_handler import SocketIoHandler
 from reservation import Reservation
@@ -13,10 +14,14 @@ class OTBoxStartup:
 	SSH_RETRY_TIME = 600
 	RETRY_PAUSE = 6
 
-	def __init__(self, user, domain, testbed):
-		self.user = user
-		self.domain = domain
-		self.testbed = testbed
+	def __init__(self, user, domain, testbed, broker):
+		self.user          = user
+		self.domain        = domain
+		self.testbed       = testbed
+		self.broker        = broker
+
+		self.mqttclient    = mqtt.Client(CLIENT)
+		self.mqttclient.connect(self.broker)
 
 		self.socketIoHandler = SocketIoHandler()
 
@@ -37,12 +42,12 @@ class OTBoxStartup:
 
 		self.mqttclient.on_message = self.on_message
 
-		self.mqtt_thread           = threadign.Thread(
+		self.mqtt_thread           = threading.Thread(
 			name   = 'mqtt_loop',
 			target = self.client.loop_start
 		)
 		
-		self.mqttthread.start()
+		self.mqtt_thread.start()
 
 
 	def ssh_connect(self):
