@@ -1,3 +1,4 @@
 [exp-config]
 user = skrbic
 firmware_path = firmware/03oos_openwsn_prog
+broker = broker.mqttdashboard.com
