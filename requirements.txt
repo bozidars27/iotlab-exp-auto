@@ -1,3 +1,4 @@
 paramiko
 socketIO_client_nexus
 watchdog
+argparse
