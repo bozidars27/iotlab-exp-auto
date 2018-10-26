@@ -2,6 +2,7 @@ import paramiko
 import json
 import subprocess
 import time
+import threading
 
 from socket_io_handler import SocketIoHandler
 from reservation import Reservation
@@ -12,9 +13,10 @@ class OTBoxStartup:
 	SSH_RETRY_TIME = 600
 	RETRY_PAUSE = 6
 
-	def __init__(self, user, domain):
+	def __init__(self, user, domain, testbed):
 		self.user = user
 		self.domain = domain
+		self.testbed = testbed
 
 		self.socketIoHandler = SocketIoHandler()
 
@@ -30,8 +32,18 @@ class OTBoxStartup:
 		self.reservation = Reservation(user, domain)
 		self.nodes = self.reservation.get_reserved_nodes(True)
 
-                # Fetch the latest version of opentestbed software in the shared A8 director of the SSH frontend
+        # Fetch the latest version of opentestbed software in the shared A8 director of the SSH frontend
 		self.ssh_command_exec('cd A8; rm -rf opentestbed; git clone https://github.com/bozidars27/opentestbed.git; cd opentestbed; git checkout origin/opentestbed-extension;')
+
+		self.mqttclient.on_message = self.on_message
+
+		self.mqtt_thread           = threadign.Thread(
+			name   = 'mqtt_loop',
+			target = self.client.loop_start
+		)
+		
+		self.mqttthread.start()
+
 
 	def ssh_connect(self):
 		self.client.connect(self.domain, username=self.user)
@@ -89,6 +101,13 @@ class OTBoxStartup:
 					self.booted_nodes.append(node)
 					break
 
+	def on_message(client, userdata, message):
+	    if message.topic == '{0}/moteDiscoveryNotif'.format(self.testbed):
+	    	payload = json.loads(message.payload)
+
+	    	with open('nodes_eui64.log', 'a') as f:
+	    		f.write(payload['eui_64'])
+
 
 	def start(self):
 		print("OTBox startup commencing...")
@@ -99,7 +118,6 @@ class OTBoxStartup:
 				node_name = 'node-' + node.split('.')[0]
 				print("Starting otbox.py on " + node_name + "...")
                                 self.ssh_command_exec('ssh -o "StrictHostKeyChecking no" root@' + node_name + ' "source /etc/profile; cd A8; cd opentestbed; pip install requests; python otbox.py --testbed=iotlab --broker=broker.mqttdashboard.com >& otbox-' + node_name + '.log &"')
-
 				self.active_nodes.append(node)
 				self.socketIoHandler.publish('NODE_ACTIVE', node_name)
 		except:
