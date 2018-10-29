@@ -14,6 +14,8 @@ class OTBoxStartup:
 	SSH_RETRY_TIME = 600
 	RETRY_PAUSE = 6
 
+	CLIENT = "OpenBenchmark"
+
 	def __init__(self, user, domain, testbed, broker):
 		self.user          = user
 		self.domain        = domain
