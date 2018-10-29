@@ -22,7 +22,7 @@ class OTBoxStartup:
 		self.testbed       = testbed
 		self.broker        = broker
 
-		self.mqttclient    = mqtt.Client(CLIENT)
+		self.mqttclient    = mqtt.Client(self.CLIENT)
 		self.mqttclient.connect(self.broker)
 
 		self.socketIoHandler = SocketIoHandler()
