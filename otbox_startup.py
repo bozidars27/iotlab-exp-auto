@@ -122,15 +122,15 @@ class OTBoxStartup:
 		mqttclient.connect(self.broker)
 
 		payload_status = {
-            'token':       123,
-        }
-        # publish the cmd message
-        mqttclient.publish(
-            topic   = '{0}/deviceType/box/deviceId/all/cmd/status'.format(self.testbed),
-            payload = json.dumps(payload_status),
-        )
+			'token':       123,
+		}
+		# publish the cmd message
+		mqttclient.publish(
+			topic   = '{0}/deviceType/box/deviceId/all/cmd/status'.format(self.testbed),
+			payload = json.dumps(payload_status),
+		)
 
-        mqttclient.subscribe('{0}/deviceType/box/deviceId/+/resp/status'.format(TESTBED))
-		
+		mqttclient.subscribe('{0}/deviceType/box/deviceId/+/resp/status'.format(TESTBED))
+	
 		mqttclient.on_message = self.on_message
 		mqttclient.loop_start()
