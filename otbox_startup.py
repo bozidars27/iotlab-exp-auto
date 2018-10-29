@@ -96,6 +96,9 @@ class OTBoxStartup:
 					self.booted_nodes.append(node)
 					break
 
+	def on_connect(self, client, userdata, rc):
+		client.subscribe('{0}/deviceType/box/deviceId/+/resp/status'.format(self.testbed))
+
 	def on_message(client, userdata, message):
 		payload = json.loads(message.payload)
 		with open('nodes_eui64.log', 'a') as f:
@@ -124,21 +127,16 @@ class OTBoxStartup:
 		mqttclient.connect(self.broker)
 
 		status_cmd_sent = False
-
-		mqttclient.subscribe('{0}/deviceType/box/deviceId/+/resp/status'.format(self.testbed))
 		mqttclient.on_message = self.on_message
 
+		payload_status = {
+			'token':       123,
+		}
+		# publish the cmd message
+		mqttclient.publish(
+			topic   = '{0}/deviceType/box/deviceId/all/cmd/status'.format(self.testbed),
+			payload = json.dumps(payload_status),
+		)
+
 		while True:
-			if not status_cmd_sent:
-				payload_status = {
-					'token':       123,
-				}
-				# publish the cmd message
-				mqttclient.publish(
-					topic   = '{0}/deviceType/box/deviceId/all/cmd/status'.format(self.testbed),
-					payload = json.dumps(payload_status),
-				)
-
-				status_cmd_sent = True
-
 			mqttclient.loop(.1)
