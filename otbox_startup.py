@@ -99,7 +99,7 @@ class OTBoxStartup:
 	def on_message(client, userdata, message):
 		payload = json.loads(message.payload)
 		with open('nodes_eui64.log', 'a') as f:
-			f.write(payload['eui_64'] + "\n")
+			f.write(payload.motes[0]['EUI64'] + "\n")
 
 
 	def start(self):
@@ -119,7 +119,7 @@ class OTBoxStartup:
 
 	def get_eui64(self):
 		print "Getting EUI64 addresses"
-		
+
 		mqttclient    = mqtt.Client(self.CLIENT)
 		mqttclient.connect(self.broker)
 
@@ -135,4 +135,4 @@ class OTBoxStartup:
 		mqttclient.subscribe('{0}/deviceType/box/deviceId/+/resp/status'.format(self.testbed))
 	
 		mqttclient.on_message = self.on_message
-		mqttclient.loop_start()
+		mqttclient.loop_forever()
