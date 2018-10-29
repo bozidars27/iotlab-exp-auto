@@ -97,9 +97,9 @@ class OTBoxStartup:
 					break
 
 	def on_message(client, userdata, message):
-    	payload = json.loads(message.payload)
-    	with open('nodes_eui64.log', 'a') as f:
-    		f.write(payload['eui_64'] + "\n")
+		payload = json.loads(message.payload)
+		with open('nodes_eui64.log', 'a') as f:
+			f.write(payload['eui_64'] + "\n")
 
 
 	def start(self):
