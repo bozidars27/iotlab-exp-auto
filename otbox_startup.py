@@ -16,7 +16,7 @@ class OTBoxStartup:
 
 	CLIENT = "OpenBenchmark"
 
-	def __init__(self, user, domain, testbed, broker):
+	def __init__(self, user, domain, broker, testbed):
 		self.user          = user
 		self.domain        = domain
 		self.testbed       = testbed
