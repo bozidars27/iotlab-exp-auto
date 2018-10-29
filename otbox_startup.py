@@ -22,9 +22,6 @@ class OTBoxStartup:
 		self.testbed       = testbed
 		self.broker        = broker
 
-		self.mqttclient    = mqtt.Client(self.CLIENT)
-		self.mqttclient.connect(self.broker)
-
 		self.socketIoHandler = SocketIoHandler()
 
 		self.client = paramiko.SSHClient()
@@ -38,17 +35,6 @@ class OTBoxStartup:
 
 		self.reservation = Reservation(user, domain)
 		self.nodes = self.reservation.get_reserved_nodes(True)
-
-		self.mqttclient.subscribe('{0}/moteDiscoveryNotif'.format(self.testbed))
-		
-		self.mqttclient.on_message = self.on_message
-
-		self.mqtt_thread           = threading.Thread(
-			name   = 'mqtt_loop',
-			target = self.mqttclient.loop_start
-		)
-		
-		self.mqtt_thread.start()
 		
         # Fetch the latest version of opentestbed software in the shared A8 director of the SSH frontend
 		self.ssh_command_exec('cd A8; rm -rf opentestbed; git clone https://github.com/bozidars27/opentestbed.git; cd opentestbed; git checkout origin/opentestbed-extension;')
@@ -111,11 +97,9 @@ class OTBoxStartup:
 					break
 
 	def on_message(client, userdata, message):
-	    if message.topic == '{0}/moteDiscoveryNotif'.format(self.testbed):
-	    	payload = json.loads(message.payload)
-
-	    	with open('nodes_eui64.log', 'a') as f:
-	    		f.write(payload['eui_64'])
+    	payload = json.loads(message.payload)
+    	with open('nodes_eui64.log', 'a') as f:
+    		f.write(payload['eui_64'] + "\n")
 
 
 	def start(self):
@@ -133,3 +117,20 @@ class OTBoxStartup:
 			self.socketIoHandler.publish('NODE_ACTIVE_FAIL', node_name)
 			print("Exception happened!")
 
+	def get_eui64(self):
+		mqttclient    = mqtt.Client(self.CLIENT)
+		mqttclient.connect(self.broker)
+
+		payload_status = {
+            'token':       123,
+        }
+        # publish the cmd message
+        mqttclient.publish(
+            topic   = '{0}/deviceType/box/deviceId/all/cmd/status'.format(self.testbed),
+            payload = json.dumps(payload_status),
+        )
+
+        mqttclient.subscribe('{0}/deviceType/box/deviceId/+/resp/status'.format(TESTBED))
+		
+		mqttclient.on_message = self.on_message
+		mqttclient.loop_start()
