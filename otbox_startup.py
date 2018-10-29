@@ -46,7 +46,7 @@ class OTBoxStartup:
 
 		self.mqtt_thread           = threading.Thread(
 			name   = 'mqtt_loop',
-			target = self.client.loop_start
+			target = self.mqttclient.loop_start
 		)
 		
 		self.mqtt_thread.start()
