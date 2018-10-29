@@ -118,6 +118,8 @@ class OTBoxStartup:
 			print("Exception happened!")
 
 	def get_eui64(self):
+		print "Getting EUI64 addresses"
+		
 		mqttclient    = mqtt.Client(self.CLIENT)
 		mqttclient.connect(self.broker)
 
@@ -130,7 +132,7 @@ class OTBoxStartup:
 			payload = json.dumps(payload_status),
 		)
 
-		mqttclient.subscribe('{0}/deviceType/box/deviceId/+/resp/status'.format(TESTBED))
+		mqttclient.subscribe('{0}/deviceType/box/deviceId/+/resp/status'.format(self.testbed))
 	
 		mqttclient.on_message = self.on_message
 		mqttclient.loop_start()
