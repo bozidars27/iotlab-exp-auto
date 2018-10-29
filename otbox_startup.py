@@ -42,6 +42,8 @@ class OTBoxStartup:
         # Fetch the latest version of opentestbed software in the shared A8 director of the SSH frontend
 		self.ssh_command_exec('cd A8; rm -rf opentestbed; git clone https://github.com/bozidars27/opentestbed.git; cd opentestbed; git checkout origin/opentestbed-extension;')
 
+		self.mqttclient.subscribe('{0}/moteDiscoveryNotif'.format(self.testbed))
+		
 		self.mqttclient.on_message = self.on_message
 
 		self.mqtt_thread           = threading.Thread(
