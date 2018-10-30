@@ -118,7 +118,7 @@ class OTBoxStartup:
 			'token':       123,
 		}
 		# publish the cmd message
-		mqttclient.publish(
+		self.mqttclient.publish(
 			topic   = '{0}/deviceType/box/deviceId/all/cmd/status'.format(self.testbed),
 			payload = json.dumps(payload_status),
 		)
