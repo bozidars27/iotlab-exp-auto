@@ -4,6 +4,7 @@ import subprocess
 import time
 import threading
 import paho.mqtt.client as mqtt
+import os
 
 from socket_io_handler import SocketIoHandler
 from reservation import Reservation
@@ -109,9 +110,10 @@ class OTBoxStartup:
 	def on_message(self, client, userdata, message):
 		try:
 			payload = json.loads(message.payload)
-			print("Received message: {0}".format(payload.motes[0]['EUI64']))
+			eui64   = payload['returnVal']['motes'][0]['EUI64']
+			print("Received message: {0}".format(eui64))
 			with open('nodes_eui64.log', 'a') as f:
-				f.write(payload.motes[0]['EUI64'] + "\n")
+				f.write(eui64 + "\n")
 		
 		except Exception, e:
 			print("An exception occured: {0}".format(str(e)))
@@ -150,6 +152,9 @@ class OTBoxStartup:
 	def get_eui64(self):
 		print "Getting EUI64 addresses"
 
+		if os.path.exists("nodes_eui64.log"):
+			os.remove("nodes_eui64.log")
+		
 		self.mqttclient.connect(self.broker)
 
 		while True:
