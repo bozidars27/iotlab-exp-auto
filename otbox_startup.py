@@ -21,7 +21,7 @@ class OTBoxStartup:
 	
 	eui_retreival_started    = False
 
-	self.timer               =   0 #used for measuring the amount of time between status messages
+	timer                    =   0 #used for measuring the amount of time between status messages
 
 
 	def __init__(self, user, domain, broker, testbed):
