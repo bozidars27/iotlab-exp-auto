@@ -102,7 +102,7 @@ class OTBoxStartup:
 					self.booted_nodes.append(node)
 					break
 
-	def on_connect(self, client, userdata, rc):
+	def on_connect(self, client, userdata, flags, rc):
 		client.subscribe('{0}/deviceType/box/deviceId/+/resp/status'.format(self.testbed))
 
 	def on_message(client, userdata, message):
