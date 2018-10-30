@@ -14,12 +14,14 @@ class OTBoxStartup:
 	CMD_ERROR                = "cmd_error"
 	SSH_RETRY_TIME           = 600
 	RETRY_PAUSE              =   6
-	MQTT_PAUSE               =   5
-	EUI64_RETREIVAL_TIMEOUT  =  10
+	MQTT_PAUSE               =  10
+	EUI64_RETREIVAL_TIMEOUT  =   5
 
 	CLIENT                   = "OpenBenchmark"
 	
 	eui_retreival_started    = False
+
+	self.timer               =   0 #used for measuring the amount of time between status messages
 
 
 	def __init__(self, user, domain, broker, testbed):
@@ -121,6 +123,7 @@ class OTBoxStartup:
 				f.write(eui64 + "\n")
 
 			self.eui_retreival_started = True
+			self.timer                 = 0
 		
 		except Exception, e:
 			print("An exception occured: {0}".format(str(e)))
@@ -166,12 +169,11 @@ class OTBoxStartup:
 		
 		self.mqttclient.connect(self.broker)
 
-		timer = 0
 		while True:
 			self.mqttclient.loop(.1)
 
 			if self.eui_retreival_started:
-				timer += .1
+				self.timer += .1
 
-			if timer > self.EUI64_RETREIVAL_TIMEOUT:
+			if self.timer > self.EUI64_RETREIVAL_TIMEOUT:
 				break
