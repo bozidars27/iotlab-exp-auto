@@ -100,12 +100,23 @@ class OTBoxStartup:
 		client.subscribe('{0}/deviceType/box/deviceId/+/resp/status'.format(self.testbed))
 
 	def on_message(client, userdata, message):
+		print("Received message: {0}".format(payload.motes[0]['EUI64']))
 		payload = json.loads(message.payload)
 		with open('nodes_eui64.log', 'a') as f:
 			f.write(payload.motes[0]['EUI64'] + "\n")
 
 	def on_subscribe(self, mosq, obj, mid, granted_qos):
 		print("Subscribed: " + str(mid) + " " + str(granted_qos))
+
+		payload_status = {
+			'token':       123,
+		}
+		# publish the cmd message
+		mqttclient.publish(
+			topic   = '{0}/deviceType/box/deviceId/all/cmd/status'.format(self.testbed),
+			payload = json.dumps(payload_status),
+		)
+
 
 
 	def start(self):
@@ -135,15 +146,6 @@ class OTBoxStartup:
 		mqttclient.on_message   = self.on_message
 
 		mqttclient.connect(self.broker)
-
-		payload_status = {
-			'token':       123,
-		}
-		# publish the cmd message
-		mqttclient.publish(
-			topic   = '{0}/deviceType/box/deviceId/all/cmd/status'.format(self.testbed),
-			payload = json.dumps(payload_status),
-		)
 
 		while True:
 			mqttclient.loop(.1)
