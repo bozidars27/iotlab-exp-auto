@@ -104,6 +104,9 @@ class OTBoxStartup:
 		with open('nodes_eui64.log', 'a') as f:
 			f.write(payload.motes[0]['EUI64'] + "\n")
 
+	def on_subscribe(self, mosq, obj, mid, granted_qos):
+		print("Subscribed: " + str(mid) + " " + str(granted_qos))
+
 
 	def start(self):
 		print("OTBox startup commencing...")
@@ -123,11 +126,15 @@ class OTBoxStartup:
 	def get_eui64(self):
 		print "Getting EUI64 addresses"
 
-		mqttclient    = mqtt.Client(self.CLIENT)
-		mqttclient.connect(self.broker)
+		mqttclient              = mqtt.Client(self.CLIENT)
 
-		status_cmd_sent = False
-		mqttclient.on_message = self.on_message
+		status_cmd_sent         = False
+
+		mqttclient.on_connect   = self.on_connect
+		mqttclient.on_subscribe = self.on_subscribe
+		mqttclient.on_message   = self.on_message
+
+		mqttclient.connect(self.broker)
 
 		payload_status = {
 			'token':       123,
