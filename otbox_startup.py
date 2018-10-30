@@ -14,6 +14,7 @@ class OTBoxStartup:
 	CMD_ERROR = "cmd_error"
 	SSH_RETRY_TIME = 600
 	RETRY_PAUSE = 6
+	MQTT_PAUSE = 1
 
 	CLIENT = "OpenBenchmark"
 
@@ -121,6 +122,8 @@ class OTBoxStartup:
 
 	def on_subscribe(self, mosq, obj, mid, granted_qos):
 		print("Subscribed: " + str(mid) + " " + str(granted_qos))
+
+		time.sleep(self.MQTT_PAUSE)
 
 		payload_status = {
 			'token':       123,
