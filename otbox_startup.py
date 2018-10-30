@@ -11,26 +11,30 @@ from reservation import Reservation
 
 class OTBoxStartup:
 
-	CMD_ERROR = "cmd_error"
-	SSH_RETRY_TIME = 600
-	RETRY_PAUSE = 6
-	MQTT_PAUSE = 1
+	CMD_ERROR                = "cmd_error"
+	SSH_RETRY_TIME           = 600
+	RETRY_PAUSE              =   6
+	MQTT_PAUSE               =   1 
+	EUI64_RETREIVAL_TIMEOUT  =  10
 
-	CLIENT = "OpenBenchmark"
+	CLIENT                   = "OpenBenchmark"
+	
+	eui_retreival_started    = False
+
 
 	def __init__(self, user, domain, broker, testbed):
-		self.user          = user
-		self.domain        = domain
-		self.testbed       = testbed
-		self.broker        = broker
+		self.user            = user
+		self.domain          = domain
+		self.testbed         = testbed
+		self.broker          = broker
 
 		self.socketIoHandler = SocketIoHandler()
 
-		self.client = paramiko.SSHClient()
+		self.client          = paramiko.SSHClient()
 		self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 		self.client.load_system_host_keys()
 
-		self.mqttclient = mqtt.Client(self.CLIENT)
+		self.mqttclient      = mqtt.Client(self.CLIENT)
 
 		self.mqttclient.on_connect = self.on_connect
 		self.mqttclient.on_subscribe = self.on_subscribe
@@ -38,11 +42,11 @@ class OTBoxStartup:
 
 		self.ssh_connect()
 
-		self.booted_nodes = []
-		self.active_nodes = []
+		self.booted_nodes    = []
+		self.active_nodes    = []
 
-		self.reservation = Reservation(user, domain)
-		self.nodes = self.reservation.get_reserved_nodes(True)
+		self.reservation     = Reservation(user, domain)
+		self.nodes           = self.reservation.get_reserved_nodes(True)
 		
         # Fetch the latest version of opentestbed software in the shared A8 director of the SSH frontend
 		self.ssh_command_exec('cd A8; rm -rf opentestbed; git clone https://github.com/bozidars27/opentestbed.git; cd opentestbed; git checkout origin/opentestbed-extension;')
@@ -115,6 +119,8 @@ class OTBoxStartup:
 			print("Received message: {0}".format(eui64))
 			with open('nodes_eui64.log', 'a') as f:
 				f.write(eui64 + "\n")
+
+			self.eui_retreival_started = True
 		
 		except Exception, e:
 			print("An exception occured: {0}".format(str(e)))
@@ -160,5 +166,12 @@ class OTBoxStartup:
 		
 		self.mqttclient.connect(self.broker)
 
+		timer = 0
 		while True:
 			self.mqttclient.loop(.1)
+
+			if self.eui_retreival_started:
+				timer += .1
+
+			if timer > self.EUI64_RETREIVAL_TIMEOUT:
+				break
