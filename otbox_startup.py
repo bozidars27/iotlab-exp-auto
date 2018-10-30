@@ -103,13 +103,19 @@ class OTBoxStartup:
 					break
 
 	def on_connect(self, client, userdata, flags, rc):
+		print "Connected to broker: {0}".format(self.broker)
 		client.subscribe('{0}/deviceType/box/deviceId/+/resp/status'.format(self.testbed))
 
-	def on_message(client, userdata, message):
-		print("Received message: {0}".format(payload.motes[0]['EUI64']))
-		payload = json.loads(message.payload)
-		with open('nodes_eui64.log', 'a') as f:
-			f.write(payload.motes[0]['EUI64'] + "\n")
+	def on_message(self, client, userdata, message):
+		try:
+			payload = json.loads(message.payload)
+			print("Received message: {0}".format(payload.motes[0]['EUI64']))
+			with open('nodes_eui64.log', 'a') as f:
+				f.write(payload.motes[0]['EUI64'] + "\n")
+		
+		except Exception, e:
+			print("An exception occured: {0}".format(str(e)))
+
 
 	def on_subscribe(self, mosq, obj, mid, granted_qos):
 		print("Subscribed: " + str(mid) + " " + str(granted_qos))
@@ -139,6 +145,7 @@ class OTBoxStartup:
 		except:
 			self.socketIoHandler.publish('NODE_ACTIVE_FAIL', node_name)
 			print("Exception happened!")
+
 
 	def get_eui64(self):
 		print "Getting EUI64 addresses"
