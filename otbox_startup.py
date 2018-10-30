@@ -28,6 +28,12 @@ class OTBoxStartup:
 		self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 		self.client.load_system_host_keys()
 
+		self.mqttclient = mqtt.Client(self.CLIENT)
+
+		self.mqttclient.on_connect = self.on_connect
+		self.mqttclient.on_subscribe = self.on_subscribe
+		self.mqttclient.on_message = self.on_message
+
 		self.ssh_connect()
 
 		self.booted_nodes = []
@@ -137,15 +143,7 @@ class OTBoxStartup:
 	def get_eui64(self):
 		print "Getting EUI64 addresses"
 
-		mqttclient              = mqtt.Client(self.CLIENT)
-
-		status_cmd_sent         = False
-
-		mqttclient.on_connect   = self.on_connect
-		mqttclient.on_subscribe = self.on_subscribe
-		mqttclient.on_message   = self.on_message
-
-		mqttclient.connect(self.broker)
+		self.mqttclient.connect(self.broker)
 
 		while True:
-			mqttclient.loop(.1)
+			self.mqttclient.loop(.1)
