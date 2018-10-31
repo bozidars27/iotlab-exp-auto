@@ -16,7 +16,7 @@ class OTBoxFlash:
 		self.client.connect(self.broker)
 
 	def get_motes(self):
-		with open('nodes_eui64', 'r') as f:
+		with open('nodes_eui64.log', 'r') as f:
 			return f.read().split('\n')
 
 	def is_eui64(self, mote):
