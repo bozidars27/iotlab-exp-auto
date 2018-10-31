@@ -8,12 +8,17 @@ CLIENT = 'exp-auto'
 class OTBoxFlash:
 
 	def __init__(self, firmware_path, broker, testbed):
-		self.firmware_path = firmware_path
-		self.broker        = broker
-		self.testbed       = testbed
+		self.firmware_path     = firmware_path
+		self.broker            = broker
+		self.testbed           = testbed
 
-		self.client        = mqtt.Client(CLIENT)
+		self.client            = mqtt.Client(CLIENT)
+		self.client.on_connect = self.on_connect
+
 		self.client.connect(self.broker)
+
+	def on_connect(self, client, userdata, flags, rc):
+		print "Connected to broker: {0}".format(self.broker)
 
 	def get_motes(self):
 		with open('nodes_eui64.log', 'r') as f:
