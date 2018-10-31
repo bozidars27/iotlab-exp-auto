@@ -27,11 +27,15 @@ class OTBoxFlash:
 
 		topics = ['{0}/deviceType/mote/deviceId/{1}/cmd/program'.format(self.testbed, mote) for mote in self.get_motes() if self.is_eui64(mote)]
 
-		with open(self.firmware_path) as f:
-			data = f.read().replace('\n', '')
-			payload = {
-				'hex': base64.b64encode(data)
-			}
+		try:
+			with open(self.firmware_path) as f:
+				data = f.read().replace('\n', '')
+				payload = {
+					'hex': base64.b64encode(data)
+				}
 
-			for topic in topics:
-				self.client.publish(topic, json.dumps(payload))
+				for topic in topics:
+					print("Sending firmware to topic: ".format(topic))
+					self.client.publish(topic, json.dumps(payload))
+		except Exception, e:
+			print("An exception occured: {0}".format(str(e)))
