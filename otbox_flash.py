@@ -17,7 +17,7 @@ class OTBoxFlash:
 
 	def on_connect(self, client, userdata, flags, rc):
 		print "Connected to broker: {0}".format(self.broker)
-		self.flash()
+		self.flash_firmware()
 		self.client.disconnect()
 
 	def get_motes(self):
@@ -47,3 +47,4 @@ class OTBoxFlash:
 
 	def flash(self):
 		self.client.connect(self.broker)
+		self.client.loop_forever()
