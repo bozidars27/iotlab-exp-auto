@@ -35,7 +35,7 @@ class OTBoxFlash:
 				}
 
 				for topic in topics:
-					print("Sending firmware to topic: ".format(topic))
+					print("Sending firmware to topic: {0}".format(topic))
 					self.client.publish(topic, json.dumps(payload))
 		except Exception, e:
 			print("An exception occured: {0}".format(str(e)))
