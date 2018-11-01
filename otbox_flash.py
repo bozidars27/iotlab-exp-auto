@@ -8,6 +8,8 @@ CLIENT = 'exp-auto'
 class OTBoxFlash:
 
 	def __init__(self, firmware_path, broker, testbed):
+		self.PYTHON_PROC_KILL = "sudo kill $(ps aux | grep '[p]ython' | awk '{print $2}')"
+		
 		self.firmware_path     = firmware_path
 		self.broker            = broker
 		self.testbed           = testbed
