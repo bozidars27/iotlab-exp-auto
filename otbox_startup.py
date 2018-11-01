@@ -14,7 +14,7 @@ class OTBoxStartup:
 	CMD_ERROR                = "cmd_error"
 	SSH_RETRY_TIME           = 600
 	RETRY_PAUSE              =   6
-	MQTT_PAUSE               =  10
+	MQTT_PAUSE               =  20
 	EUI64_RETREIVAL_TIMEOUT  =   5
 
 	CLIENT                   = "OpenBenchmark"
