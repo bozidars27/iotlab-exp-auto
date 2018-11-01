@@ -36,7 +36,7 @@ class OTBoxFlash:
 			with open(self.firmware_path) as f:
 				data = f.read().replace('\n', '')
 				payload = {
-					'hex': base64.b64encode(data)
+					'hex': base64.b64encode(data.encode("utf8"))
 				}
 
 				for topic in topics:

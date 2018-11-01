@@ -19,7 +19,7 @@ HOSTNAME = 'saclay.iot-lab.info'
 EXP_DURATION = 15 #Duration in minutes
 NODES = "saclay,a8,106+107+102"
 
-FIRMWARE = os.path.join(os.path.dirname(__file__), 'firmware/03oos_openwsn_prog')
+FIRMWARE = os.path.join(os.path.dirname(__file__), 'firmware')
 BROKER = configParser.get('exp-config', 'broker')
 
 def add_parser_args(parser):
