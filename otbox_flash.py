@@ -1,7 +1,6 @@
 import paho.mqtt.client as mqtt
 import base64
 import json
-import re
 
 CLIENT = 'exp-auto'
 
@@ -20,17 +19,8 @@ class OTBoxFlash:
 		self.flash_firmware()
 		self.client.disconnect()
 
-	def get_motes(self):
-		with open('nodes_eui64.log', 'r') as f:
-			return f.read().split('\n')
-
-	def is_eui64(self, mote):
-		return re.match('([0-9a-f]{2}-){7}([0-9a-f]{2})\Z', mote) != None
-
 	def flash_firmware(self):
-		#{0}/deviceType/mote/deviceId/+/cmd/program
-
-		topics = ['{0}/deviceType/mote/deviceId/{1}/cmd/program'.format(self.testbed, mote) for mote in self.get_motes() if self.is_eui64(mote)]
+		# {0}/deviceType/mote/deviceId/all/cmd/program
 
 		try:
 			with open(self.firmware_path) as f:
@@ -40,9 +30,9 @@ class OTBoxFlash:
 					'description': ''
 				}
 
-				for topic in topics:
-					print("Sending firmware to topic: {0}".format(topic))
-					self.client.publish(topic, json.dumps(payload))
+				print("Sending firmware to motes")
+				self.client.publish('{0}/deviceType/mote/deviceId/all/cmd/program'.format(self.testbed), json.dumps(payload))
+
 		except Exception, e:
 			print("An exception occured: {0}".format(str(e)))
 

@@ -3,7 +3,6 @@ import json
 import subprocess
 import time
 import threading
-import paho.mqtt.client as mqtt
 import os
 
 from socket_io_handler import SocketIoHandler
@@ -24,23 +23,16 @@ class OTBoxStartup:
 	timer                    =   0 #used for measuring the amount of time between status messages
 
 
-	def __init__(self, user, domain, broker, testbed):
+	def __init__(self, user, domain, testbed):
 		self.user            = user
 		self.domain          = domain
 		self.testbed         = testbed
-		self.broker          = broker
 
 		self.socketIoHandler = SocketIoHandler()
 
 		self.client          = paramiko.SSHClient()
 		self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 		self.client.load_system_host_keys()
-
-		self.mqttclient      = mqtt.Client(self.CLIENT)
-
-		self.mqttclient.on_connect = self.on_connect
-		self.mqttclient.on_subscribe = self.on_subscribe
-		self.mqttclient.on_message = self.on_message
 
 		self.ssh_connect()
 
@@ -110,41 +102,6 @@ class OTBoxStartup:
 					self.booted_nodes.append(node)
 					break
 
-	def on_connect(self, client, userdata, flags, rc):
-		print "Connected to broker: {0}".format(self.broker)
-		client.subscribe('{0}/deviceType/box/deviceId/+/resp/status'.format(self.testbed))
-
-	def on_message(self, client, userdata, message):
-		try:
-			payload = json.loads(message.payload)
-			eui64   = payload['returnVal']['motes'][0]['EUI64']
-			print("Received message: {0}".format(eui64))
-			with open('nodes_eui64.log', 'a') as f:
-				f.write(eui64 + "\n")
-
-			self.eui_retreival_started = True
-			self.timer                 = 0
-		
-		except Exception, e:
-			print("An exception occured: {0}".format(str(e)))
-
-
-	def on_subscribe(self, mosq, obj, mid, granted_qos):
-		print("Subscribed: " + str(mid) + " " + str(granted_qos))
-
-		time.sleep(self.MQTT_PAUSE)
-
-		payload_status = {
-			'token':       123,
-		}
-		# publish the cmd message
-		self.mqttclient.publish(
-			topic   = '{0}/deviceType/box/deviceId/all/cmd/status'.format(self.testbed),
-			payload = json.dumps(payload_status),
-		)
-
-
-
 	def start(self):
 		print("OTBox startup commencing...")
 		self.boot_wait()
@@ -159,21 +116,3 @@ class OTBoxStartup:
 		except:
 			self.socketIoHandler.publish('NODE_ACTIVE_FAIL', node_name)
 			print("Exception happened!")
-
-
-	def get_eui64(self):
-		print "Getting EUI64 addresses"
-
-		if os.path.exists("nodes_eui64.log"):
-			os.remove("nodes_eui64.log")
-		
-		self.mqttclient.connect(self.broker)
-
-		while True:
-			self.mqttclient.loop(.1)
-
-			if self.eui_retreival_started:
-				self.timer += .1
-
-			if self.timer > self.EUI64_RETREIVAL_TIMEOUT:
-				break
